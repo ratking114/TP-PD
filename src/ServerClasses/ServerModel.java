@@ -1,5 +1,6 @@
 package ServerClasses;
 
+import Threads.AdminThread;
 import Threads.HeartBeatListenerThread;
 import Threads.HeartbeatThread;
 
@@ -36,6 +37,9 @@ public class ServerModel {
 
         heartbeatThread.start();
         heartBeatListenerThread.start();
+
+        AdminThread adminThread = new AdminThread();
+        adminThread.start();
 
     }
 
