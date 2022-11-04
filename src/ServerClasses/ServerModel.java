@@ -1,6 +1,5 @@
 package ServerClasses;
 
-import Threads.AdminThread;
 import Threads.HeartBeatListenerThread;
 import Threads.HeartbeatThread;
 
@@ -40,7 +39,7 @@ public class ServerModel {
         setupDatabase();
     }
 
-    public void setupDatabase() {
+    public void setupDatabase() throws IOException {
         //start the thread that listens to heartbeats and wait 30 seconds for heartbeats
         HeartBeatListenerThread heartBeatListenerThread = new HeartBeatListenerThread(this);
         heartBeatListenerThread.start();
