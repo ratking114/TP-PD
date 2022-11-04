@@ -55,4 +55,28 @@ public class ServerHeartBeatInfo implements Serializable {
     public String toString() {
         return String.format("Porto: %d\tDatabase version:%d\tWorkLoad:%dAvailability:%b",port,database_version,work_load,availability);
     }
+
+    public Date getHeartbeatTime() {
+        return heartbeatTime;
+    }
+
+    public void setHeartbeatTime(Date heartbeatTime) {
+        this.heartbeatTime = heartbeatTime;
+    }
+
+
+    @Override
+    public int compareTo(ServerHeartBeatInfo o) {
+        return getWorkLoad() - o.getWorkLoad();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        //compare the TCP Port number
+        if(obj instanceof ServerHeartBeatInfo)
+            return false;
+
+        //compare the port numbers
+        return port == ((ServerHeartBeatInfo) obj).port;
+    }
 }
