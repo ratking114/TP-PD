@@ -1,13 +1,22 @@
 package ServerClasses;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class ServerHeartBeatInfo implements Serializable, Comparable<ServerHeartBeatInfo>{
     private int port;
     private int database_version;
     private int work_load;
     private boolean availability;
+    private Date heartbeatTime;
 
+    public ServerHeartBeatInfo(int port, int database_version, int work_load, boolean availability, Date heartbeatTime) {
+        this.port = port;
+        this.database_version = database_version;
+        this.work_load = work_load;
+        this.availability = availability;
+        this.heartbeatTime = heartbeatTime;
+    }
     public ServerHeartBeatInfo(int port, int database_version, int work_load, boolean availability) {
         this.port = port;
         this.database_version = database_version;
