@@ -30,8 +30,15 @@ public class HeartBeatListenerThread extends Thread {
                         rcv_packet.getLength()));
                 ServerHeartBeatInfo heartbeatInfo = (ServerHeartBeatInfo) in.readObject();
 
-                if(heartbeatInfo.getPort() != serverModel.getAssignedTcpPort())
+
+                if(heartbeatInfo.getPort() != serverModel.getAssignedTcpPort()) {
+
+
+
+
+                    //print its contents
                     System.out.println(heartbeatInfo);
+                }
 
             }
         } catch (IOException | ClassNotFoundException e) {

@@ -2,7 +2,7 @@ package ServerClasses;
 
 import java.io.Serializable;
 
-public class ServerHeartBeatInfo implements Serializable {
+public class ServerHeartBeatInfo implements Serializable, Comparable<ServerHeartBeatInfo>{
     private int port;
     private int database_version;
     private int work_load;
