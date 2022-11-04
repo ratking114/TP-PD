@@ -23,8 +23,6 @@ class TcpListeningThread extends Thread{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-
     }
 }
 
@@ -32,9 +30,7 @@ class TcpListeningThread extends Thread{
 
 public class Server {
     public static void main(String[] args) throws IOException {
-
-
-        ServerModel server_model = new ServerModel();
+        ServerModel server_model = new ServerModel(args[0]);
 
 
 

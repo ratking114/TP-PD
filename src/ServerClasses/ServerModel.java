@@ -13,7 +13,7 @@ import java.util.*;
 
 public class ServerModel {
     public static final String CLUSTER_GROUP_ADDRESS = "239.39.39.39";
-    private static final int group_port =4004;
+    private static final int group_port = 4004;
 
     private InetAddress cluster_group;
     private final ServerSocket tcp_socket;
