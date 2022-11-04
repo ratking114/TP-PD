@@ -1,10 +1,9 @@
 package ServerClasses;
 
 import Threads.HeartBeatListenerThread;
-import Threads.HeartbeatThread;
+import shared.Message;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,14 +17,27 @@ public class ServerModel {
     private final ServerSocket tcp_socket;
     private final MulticastSocket multicast_socket;
 
-    private final String database_file_name = "PD-2022-23-TP";
 
     private final ArrayList<ServerHeartBeatInfo> alive_server_list = new ArrayList<>();
 
 
     private final ServerHeartBeatInfo heartbeat_info;
 
+    /**
+     * The Path to the database directory
+     */
     private final Path database_directory;
+
+    /**
+     * The path to the database file name.
+     */
+    private final Path database_file_name;
+
+    /**
+     * The path to the original database file name which is the empty database file from wich one can
+     * construct an empty database by copying this file's contents.
+     */
+    private final Path original_database_file_name;
 
 
     public ServerModel(String database_directory) throws IOException {
@@ -34,7 +46,15 @@ public class ServerModel {
         tcp_socket = new ServerSocket(0);
         System.out.println("ServerClasses.Server created on port: " + tcp_socket.getLocalPort());
         heartbeat_info  = new ServerHeartBeatInfo(tcp_socket.getLocalPort(),0,0,false);
+
+        //save the database directory
         this.database_directory = Path.of(database_directory);
+
+        //save the database file name
+        this.database_file_name = Path.of(database_directory + File.separator + "PD-2022-23-TP.db");
+
+        //save the original database file name
+        original_database_file_name = Path.of("../Database/default/PD-2022-23-TP.db");
 
         setupDatabase();
     }
@@ -57,10 +77,7 @@ public class ServerModel {
 
                 //create the database file in the directory just created and copy the base
                 //database file to it
-                Files.copy(
-                        Path.of(database_file_name),
-                        Path.of(this.database_directory.getFileName() + File.separator + database_file_name)
-                );
+                Files.copy(original_database_file_name, database_file_name);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -71,13 +88,66 @@ public class ServerModel {
             List<ServerHeartBeatInfo> servers_with_highest_database_version = alive_server_list.stream().filter(server->server.getDatabaseVersion()==alive_server_list.stream().max(
                     Comparator.comparingInt(ServerHeartBeatInfo::getDatabaseVersion)).get().getDatabaseVersion()
             ).toList();
-            ServerHeartBeatInfo server_to_fetch_database=servers_with_highest_database_version.stream().min(Comparator.comparingInt(ServerHeartBeatInfo::getWorkLoad)).get();
+            ServerHeartBeatInfo server_to_fetch_database = servers_with_highest_database_version.stream().min(Comparator.comparingInt(ServerHeartBeatInfo::getWorkLoad)).get();
 
-            //establish a TCP connection with that server to get the updated database
-
-
+            //get the updated database from the server
+            getUpdatedDatabaseFromPeer(server_to_fetch_database);
         }
-    }//sexy nanda - King
+    }
+
+    /**
+     * Fetches the updated database from the server to which the supplied ServerHeartBeatInfo
+     * says respect to.
+     * @param server_to_fetch_database the ServerHeartBeatInfo of the Server from which the
+     * database will be fetched.
+     */
+    public void getUpdatedDatabaseFromPeer( ServerHeartBeatInfo server_to_fetch_database) throws IOException{
+        //establish a TCP connection with that server to get the updated database
+        Socket socket = new Socket("localhost", server_to_fetch_database.getPort());
+
+        //send it a message indicating that we are a server
+        serializeMessage(new Message(Message.TYPE_OF_MESSAGE.HELLO_I_AM_SERVER, null), socket.getOutputStream());
+
+        //Stop heartbeat thread by signaling on our HeartBeatInfo that we are inactive
+        this.heartbeat_info.setAvailability(false);
+
+        //send the message to the peer server with our request
+        serializeMessage(new Message(Message.TYPE_OF_MESSAGE.TRANSFER_DATABASE, null), socket.getOutputStream());
+
+        //read the message from the peer Server
+        Message received_message = null;
+        try {
+            received_message = deserializeMessage(socket.getInputStream());
+        }catch(ClassNotFoundException ignored){}
+
+        //write the database contents to our database file
+        new ByteArrayInputStream( ((byte[])received_message.attachment)).transferTo(
+                new FileOutputStream(this.database_file_name.toFile())
+        );
+
+        //close the socket as the transfer is done
+        socket.close();
+    }
+
+    /**
+     * Serializes and writes the serialized Message to the supplied OutputStream.
+     * @param message_to_serialize the Message to serialize.
+     * @param to_write the OutputStream to which the serialized message shall be written
+     */
+    static public void serializeMessage(Message message_to_serialize, OutputStream to_write) throws IOException{
+        new ObjectOutputStream(to_write).writeObject(message_to_serialize);
+    }
+
+    /**
+     * Deserializes a Message from an InputStream and returns such Message.
+     * @param message_to_deserialize_stream the InputStream where the Message is written.
+     * @return the deserialized Message
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    static public Message deserializeMessage(InputStream message_to_deserialize_stream) throws IOException, ClassNotFoundException{
+        return (Message) new ObjectInputStream(message_to_deserialize_stream).readObject();
+    }
 
     public static int getGroupPort() {
         return group_port;
