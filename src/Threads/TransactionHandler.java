@@ -52,7 +52,7 @@ public class TransactionHandler extends Thread {
                 try {
                     //create the socket to receive the answer from our peers
                     receive_answer = new DatagramSocket(request.prepare.answer_udp_port);
-                    receive_answer.setSoTimeout(1000);
+                    receive_answer.setSoTimeout(10000);
 
                     //place the response port in the Prepare message
                     request.prepare.answer_udp_port = receive_answer.getLocalPort();
@@ -75,12 +75,14 @@ public class TransactionHandler extends Thread {
                 while (number_of_tries-- != 0) {
                     try {
                         int number_of_alive_servers = _servermodel.getAliveServerList().size();
+                        int confirmed_servers = 0;
                         if (number_of_alive_servers != 0) {
                             do {
                                 //wait 1sec for a response
                                 DatagramPacket answer = new DatagramPacket(new byte[256], 256);
                                 receive_answer.receive(answer);
-                            } while (number_of_alive_servers-- != 0);
+                                confirmed_servers++;
+                            } while (number_of_alive_servers != confirmed_servers);
 
                             //all servers answered so we can leave the while(wait for confirmations)
                             System.out.println("Received all the confirmations! Sending the COMMIT");
