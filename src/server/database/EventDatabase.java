@@ -40,9 +40,13 @@ public class EventDatabase {
 
         String query = "select * from utilizador where username=?";
 
+        String update_query = "update utilizador set autenticado=? where username=?";
+
         //create a prepared statement and add the received username to it
         PreparedStatement statement = database_connection.prepareStatement(query);
         statement.setString(1,login_user.username);
+
+        PreparedStatement update_statement = database_connection.prepareStatement(update_query);
 
         //execute the query and save the results in a ResultSet
         ResultSet query_result = statement.executeQuery();
@@ -60,20 +64,23 @@ public class EventDatabase {
                 user_data.password = query_result.getString("password");
                 user_data.administrator = query_result.getBoolean("administrador");
 
-                query_result.updateBoolean("autenticado", true );
 
-                user_data.authenticated = query_result.getBoolean("autenticado");
+                update_statement.setBoolean(1,true);
+                update_statement.setString(2,user_data.username);
+                update_statement.executeUpdate();
+
+
+
+                user_data.authenticated = true;
 
                 return new Message(Message.TYPE_OF_MESSAGE.LOGIN,new UserViewModel(user_data,Error_Messages.SUCESS));
             }
 
-            query_result.updateBoolean("autenticado", false );
             return new Message(Message.TYPE_OF_MESSAGE.LOGIN, new UserViewModel(null,Error_Messages.INVALID_PASSWORD));
 
 
         }
 
-        query_result.updateBoolean("autenticado", false );
         return new Message(Message.TYPE_OF_MESSAGE.LOGIN, new UserViewModel(null,Error_Messages.USERNAME_DOESNT_EXIST));
 
 
