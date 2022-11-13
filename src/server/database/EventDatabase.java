@@ -18,11 +18,15 @@ public class EventDatabase {
      */
     private final Connection database_connection;
 
-    public EventDatabase(Path database_file_name) throws SQLException{
+     private final ServerModel server_model;
+
+    public EventDatabase(Path database_file_name, ServerModel server_model) throws SQLException{
         //create the DatabaseConnection
         this.database_connection = DriverManager.getConnection(
                 "jdbc:sqlite:" + database_file_name
         );
+
+        this.server_model = server_model;
     }
 
     /**
