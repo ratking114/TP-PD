@@ -158,7 +158,7 @@ public class ServerModel {
 
         //create the Database
         try {
-            this.event_database = new EventDatabase(this.database_file_name);
+            this.event_database = new EventDatabase(this.database_file_name, this);
         }catch (SQLException ignored){}
     }
 
