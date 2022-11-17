@@ -19,4 +19,14 @@ public class User implements Serializable {
         old_Username=null;
     }
     public User(){}
+
+    public User(int id, String username, String name, String password, boolean administrator, boolean authenticated) {
+        this.id = id;
+        this.username = username;
+        this.name = name;
+        this.password = password;
+        this.administrator = administrator;
+        this.authenticated = authenticated;
+        old_Username=null;
+    }
 }

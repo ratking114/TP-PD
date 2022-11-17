@@ -64,6 +64,8 @@ public class Message implements Serializable {
 
         GET_LIST_OF_ALL_SHOWS,
         DELETE_SHOW,
+
+        LOGOUT,
         /**
          * Message sent by a Server to its clients to signal that it went unavailable and the clients must try
          * to connect to another server. The attachment of this message is a list of all the available servers

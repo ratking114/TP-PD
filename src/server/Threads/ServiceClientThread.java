@@ -176,6 +176,13 @@ public class ServiceClientThread extends Thread {
                                     _client_socket_channel
                             );
                         }
+                        else if(received_message.type_of_message==Message.TYPE_OF_MESSAGE.LOGOUT) {
+                            System.out.println("Received a filter shows command");
+                            ServerModel.sendMessageViaChannel(
+                                    _server_model.getEventDatabase().logout(received_message),
+                                    _client_socket_channel
+                            );
+                        }
                         else if(received_message.type_of_message==Message.TYPE_OF_MESSAGE.GET_LIST_OF_ALL_SHOWS) {
                             System.out.println("Received a request list of shows command");
                             ServerModel.sendMessageViaChannel(

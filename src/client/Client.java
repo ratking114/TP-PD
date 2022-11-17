@@ -203,6 +203,9 @@ public class Client {
                     else if(user_command.equals("login")){
                         System.out.println(executeLogin());
                     }
+                    else if(user_command.equals("logout")){
+                        System.out.println(logout());
+                    }
                     else if(user_command.equals("get_paid_reservations")){
                         System.out.println(getPaidReservations());
                     }
@@ -439,6 +442,25 @@ public class Client {
 
         return sb.toString();
 
+    }
+
+    public String logout(){
+        Message message_to_send = new Message(Message.TYPE_OF_MESSAGE.LOGOUT, _user);
+
+        sendTCPMessage(message_to_send);
+
+        Message received_message = waitAndTakeOutServerAnswer();
+
+        UserViewModel user_viewmodel = (UserViewModel) received_message.attachment;
+
+        switch (user_viewmodel.error_message){
+            case INVALID_PASSWORD -> {return Error_Messages.INVALID_PASSWORD.toString();}
+            case USERNAME_DOESNT_EXIST -> {return Error_Messages.USERNAME_DOESNT_EXIST.toString();}
+            default ->{
+                _user = user_viewmodel.user;
+                return "Sucessfully logged out";
+            }
+        }
     }
 
     public String login(String username, String password){
