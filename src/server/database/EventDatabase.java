@@ -1042,7 +1042,7 @@ public class EventDatabase {
                     insert_statement.executeUpdate(query.toString());
                     return new Message(Message.TYPE_OF_MESSAGE.INSERT_SHOW_BY_FILE,Error_Messages.SUCESS);
                 } else {
-                    return new Message(Message.TYPE_OF_MESSAGE.LOGOUT, new UserViewModel(null, Error_Messages.SQL_ERROR));
+                    return new Message(Message.TYPE_OF_MESSAGE.INSERT_SHOW_BY_FILE, Error_Messages.SQL_ERROR);
                 }
 
             } else{
@@ -1070,7 +1070,7 @@ public class EventDatabase {
                     insert_statement.executeUpdate(query.toString());
                     return new Message(Message.TYPE_OF_MESSAGE.INSERT_SHOW_BY_FILE,Error_Messages.SUCESS);
                 } else {
-                    return new Message(Message.TYPE_OF_MESSAGE.LOGOUT, new UserViewModel(null, Error_Messages.SQL_ERROR));
+                    return new Message(Message.TYPE_OF_MESSAGE.INSERT_SHOW_BY_FILE, Error_Messages.SQL_ERROR);
                 }
 
             }

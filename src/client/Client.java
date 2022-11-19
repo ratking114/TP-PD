@@ -1138,6 +1138,7 @@ public class Client {
 
         switch ((Error_Messages) response.attachment){
             case ERROR_IN_FILE -> {return Error_Messages.ERROR_IN_FILE.toString();}
+            case SQL_ERROR -> {return Error_Messages.SQL_ERROR.toString();}
             default -> {return "Show inserted sucessfully";}
         }
     }

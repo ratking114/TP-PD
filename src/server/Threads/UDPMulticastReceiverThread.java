@@ -22,7 +22,7 @@ public class UDPMulticastReceiverThread extends Thread {
     public void run() {
         try {
             while (true) {
-                DatagramPacket rcv_packet = new DatagramPacket(new byte[1024], 1024);
+                DatagramPacket rcv_packet = new DatagramPacket(new byte[65000], 65000);
                 serverModel.getMulticastSocket().receive(rcv_packet);
 
                 ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(rcv_packet.getData(), 0,
@@ -143,6 +143,7 @@ public class UDPMulticastReceiverThread extends Thread {
             }
         } catch (IOException | ClassNotFoundException | InterruptedException e) {
             System.out.println(e);
+            e.printStackTrace();
         }
     }
 
